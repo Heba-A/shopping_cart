@@ -1,0 +1,5 @@
+_assetic:
+    resource: .
+    type: assetic
+_app:
+    resource: /home/heba/Desktop/cart_project/cart/app/config/routing_dev.yml

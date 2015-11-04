@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+
+    <div id="wrapper">
+        <div id="container">
+            <div>
+
+                &nbsp; &nbsp;  &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;
+                <span><b> Cart  &nbsp; </b></span>
+                <button onclick="window.location.href='/cart_list/1'">
+                    <a >
+                    <i class="fa fa-shopping-cart fa-3x"></i>
+                    <i style="color:red" class="fa fa-1x">{{ cart_count }}</i>
+                        </a>
+                </button>
+
+                <span><b> Wish-list cart  &nbsp; </b></span>
+                <button>
+                    <a href="/cart_list/1">
+                        <i class="fa fa-shopping-cart fa-3x"></i>
+                    </a>
+                    <i style="color:red" class="fa fa-1x">{{ wish_count }}</i>
+                </button>
+
+            </div>
+
+            <div id="welcome">
+                <h1><span>Items List</span> <!-- Symfony  {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }} !--> </h1>
+
+                <form>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th><i class="fa fa-user"></i> Item Name </th>
+								<th><i class="fa fa-calendar"></i> Price </th>
+								<th><i class="fa fa-cogs"></i></th>
+							</tr>
+						</thead>
+						<tbody>
+							 {% for item in items_list %}
+							<tr>
+								<td> {{ item.name }} </td>
+								<td> {{ item.price }}</td>
+								<td> <a href="/add_to_cart/{{ item.id }}"> <i class="fa fa-cart-plus fa-lg"></i>
+                                    </a>
+                                <a href="/add_to_wish_list/{{ item.id }}"><i class="fa fa-heart-o fa-lg"></i></a>
+                                </td>
+							</tr>
+							{% else %}
+								<tr>
+									<td colspan="4" align="center"> nooo </td>
+							   </tr>
+							{% endfor %}
+						</tbody>
+					</table>         
+				</form>
+			</div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    body { background: #F5F5F5; font: 18px/1.5 sans-serif; }
+    h1, h2 { line-height: 1.2; margin: 0 0 .5em; }
+    h1 { font-size: 36px; }
+    h2 { font-size: 21px; margin-bottom: 1em; }
+    p { margin: 0 0 1em 0; }
+    a { color: #0000F0; }
+    a:hover { text-decoration: none; }
+    code { background: #F5F5F5; max-width: 100px; padding: 2px 6px; word-wrap: break-word; }
+    #wrapper { background: #FFF; margin: 1em auto; max-width: 800px; width: 95%; }
+    #container { padding: 2em; }
+    #welcome, #status { margin-bottom: 2em; }
+    #welcome h1 span { display: block; font-size: 75%; }
+    #icon-status, #icon-book { float: left; height: 64px; margin-right: 1em; margin-top: -4px; width: 64px; }
+    #icon-book { display: none; }
+
+    @media (min-width: 768px) {
+        #wrapper { width: 80%; margin: 2em auto; }
+        #icon-book { display: inline-block; }
+        #status a, #next a { display: block; }
+
+        @-webkit-keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+        @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+        .sf-toolbar { opacity: 0; -webkit-animation: fade-in 1s .2s forwards; animation: fade-in 1s .2s forwards;}
+    }
+</style>
+{% endblock %}

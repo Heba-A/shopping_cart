@@ -1,0 +1,26 @@
+use Doctrine\ORM\Mapping as ORM;
+namespace src\AppBundle\Entity;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="item")
+ */
+class item
+{
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $id;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    protected $label;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    protected $price;
+}
