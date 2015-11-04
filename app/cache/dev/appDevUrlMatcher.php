@@ -143,7 +143,7 @@ class appDevUrlMatcher extends Symfony\Bundle\FrameworkBundle\Routing\Redirectab
             }
 
             // app_default_add_to_wish_list
-            if (0 === strpos($pathinfo, '/add_to_wish_list') && preg_match('#^/add_to_wish_list/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
+            if (0 === strpos($pathinfo, '/add_to_wish_list') && preg_match('#^/add_to_wish_list/(?P<cartId>[^/]++)/(?P<itemId>[^/]++)$#s', $pathinfo, $matches)) {
                 return $this->mergeDefaults(array_replace($matches, array('_route' => 'app_default_add_to_wish_list')), array (  '_controller' => 'AppBundle\\Controller\\DefaultController::add_to_wish_list',));
             }
 
@@ -152,6 +152,11 @@ class appDevUrlMatcher extends Symfony\Bundle\FrameworkBundle\Routing\Redirectab
         // app_default_cart_list
         if (0 === strpos($pathinfo, '/cart_list') && preg_match('#^/cart_list/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
             return $this->mergeDefaults(array_replace($matches, array('_route' => 'app_default_cart_list')), array (  '_controller' => 'AppBundle\\Controller\\DefaultController::cart_list',));
+        }
+
+        // app_default_wish_cart_list
+        if (0 === strpos($pathinfo, '/wish_cart_list') && preg_match('#^/wish_cart_list/(?P<id>[^/]++)$#s', $pathinfo, $matches)) {
+            return $this->mergeDefaults(array_replace($matches, array('_route' => 'app_default_wish_cart_list')), array (  '_controller' => 'AppBundle\\Controller\\DefaultController::wish_cart_list',));
         }
 
         throw 0 < count($allow) ? new MethodNotAllowedException(array_unique($allow)) : new ResourceNotFoundException();

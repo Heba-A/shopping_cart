@@ -9,25 +9,21 @@
 
                 &nbsp; &nbsp;  &nbsp; &nbsp;  &nbsp; &nbsp; &nbsp; &nbsp;
                 <span><b> Cart  &nbsp; </b></span>
+
                 <button onclick="window.location.href='/cart_list/1'">
-                    <a >
                     <i class="fa fa-shopping-cart fa-3x"></i>
                     <i style="color:red" class="fa fa-1x">{{ cart_count }}</i>
-                        </a>
                 </button>
 
                 <span><b> Wish-list cart  &nbsp; </b></span>
-                <button>
-                    <a href="/cart_list/1">
-                        <i class="fa fa-shopping-cart fa-3x"></i>
-                    </a>
+                <button onclick="window.location.href='/wish_cart_list/2'">
+                    <i class="fa fa-shopping-cart fa-3x"></i>
                     <i style="color:red" class="fa fa-1x">{{ wish_count }}</i>
                 </button>
-
             </div>
 
             <div id="welcome">
-                <h1><span>Items List</span> <!-- Symfony  {{ constant('Symfony\\Component\\HttpKernel\\Kernel::VERSION') }} !--> </h1>
+                <h1><span>Items List</span> </h1>
 
                 <form>
 					<table class="table table-striped">
@@ -38,22 +34,33 @@
 								<th><i class="fa fa-cogs"></i></th>
 							</tr>
 						</thead>
+
 						<tbody>
 							 {% for item in items_list %}
 							<tr>
 								<td> {{ item.name }} </td>
 								<td> {{ item.price }}</td>
-								<td> <a href="/add_to_cart/{{ item.id }}"> <i class="fa fa-cart-plus fa-lg"></i>
-                                    </a>
-                                <a href="/add_to_wish_list/{{ item.id }}"><i class="fa fa-heart-o fa-lg"></i></a>
+								<td> <a href="/add_to_cart/{{ item.id }}"> <i class="fa fa-cart-plus fa-lg"></i></a>
+
+                                    {% if item.is_wished %}
+                                        <a href="{{ path('app_default_add_to_wish_list',{  'cartId': 2 ,'itemId': item.id }) }}" >
+                                            <i class="fa fa-heart fa-lg"></i>
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ path('app_default_add_to_wish_list',{  'cartId': 2 ,'itemId': item.id }) }}" >
+                                            <i class="fa fa-heart-o fa-lg"></i>
+                                        </a>
+                                    {% endif %}
+
                                 </td>
 							</tr>
 							{% else %}
 								<tr>
-									<td colspan="4" align="center"> nooo </td>
+									<td colspan="4" align="center"> No items found </td>
 							   </tr>
 							{% endfor %}
 						</tbody>
+
 					</table>         
 				</form>
 			</div>

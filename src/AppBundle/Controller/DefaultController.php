@@ -15,7 +15,6 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-
         $db_items = $this->getDoctrine()
             ->getRepository('AppBundle:CartItem')
             ->findAll();
@@ -39,13 +38,29 @@ class DefaultController extends Controller
 
         $wish_cart_count = 0;
         foreach ($wish_cart_items as $item) {
-            $wish_cart_count+= (int)$item->getQuantity();
+            $wish_cart_count = $wish_cart_count + (int)$item->getQuantity();
         }
 
+        $ListItems = [];
+        foreach ($db_items as $item) {
+            $ListItems[$item->getId()] = array(
+                'id' => $item->getId(),
+                'name' => $item->getName() ,
+                'price' => $item->getPrice() ,
+                'is_wished' => false
+            );
+
+            foreach ($wish_cart_items as $wishListItem) {
+                if ($item->getId() == $wishListItem->getItemId()->getId()) {
+                    $ListItems[$item->getId()]['is_wished'] = true;
+                }
+            }
+        }
         return $this->render('default/index.html.twig', array(
-			'items_list' => $db_items ,
+			'items_list' => $ListItems ,
             'cart_count' => $cart_count ,
-            'wish_count' => $wish_cart_count
+            'wish_count' => $wish_cart_count ,
+            'wish_items' => $wish_cart_items
         ));
     }
 
@@ -60,7 +75,7 @@ class DefaultController extends Controller
             ->findOneBy(
                 array('itemId' => $id , 'cartId'=> '1')
             );
-        dump($selected_item_in_table); dump($selected_item_in_table->getQuantity()+1); die;
+       // dump($selected_item_in_table); dump($selected_item_in_table->getQuantity()+1); die;
         if($selected_item_in_table){
             // update table
 
@@ -82,29 +97,40 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/add_to_wish_list/{id}")
+     *
+     * @Route("/add_to_wish_list/{cartId}/{itemId}")
+     *
      */
-    public function add_to_wish_list($id){
+    public function add_to_wish_list($cartId , $itemId){
 
-        $em = $this->getDoctrine()->getManager();
+        $user_selected_item = $this->getDoctrine()
+            ->getRepository('AppBundle:CartItem')
+            ->findOneBy(
+                array('id'=> $itemId)
+            );
+
+        $user_wish_cart = $this->getDoctrine()
+            ->getRepository('AppBundle:Cart')
+            ->findOneBy(
+                array('id'=> $cartId)
+            );
+
         $selected_item_in_table = $this->getDoctrine()
             ->getRepository('AppBundle:cart_entries')
             ->findOneBy(
-                array('itemId' => $id , 'cartId'=> '2')
+                array('itemId' => $user_selected_item , 'cartId'=> $user_wish_cart)
             );
 
-       // dump($selected_item_in_table); dump($selected_item_in_table->getQuantity()+1); die;
-
         if($selected_item_in_table){
-            // update table
-            //$selected_item_in_table->setQuantity($selected_item_in_table->getQuantity()+1);
-            //$em->flush();
+            // remove from table.
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($selected_item_in_table);
+            $em->flush();
         }else{
-            // insert table
-
+            // insert to table
             $inserted_item = new cart_entries();
-            $inserted_item->setItemId($id);
-            $inserted_item->setCartId(2);
+            $inserted_item->setItemId($user_selected_item);
+            $inserted_item->setCartId($user_wish_cart);
             $inserted_item->setQuantity(1);
 
             $em = $this->getDoctrine()->getManager();
@@ -127,51 +153,29 @@ class DefaultController extends Controller
             ->findBy(
                 array('cartId'=> $id)
             );
-//        dump($cart_items);die;
-//$cart_items->getCartId();
-
-        //getCartItems($id);
-        //$query = $em->createQuery("SELECT u, a FROM User u JOIN u.address a WHERE a.city = 'Berlin'");
-        //$users = $query->getResult();
-        //=================
-
-        /*$items = $em->createQueryBuilder('v')
-            ->add('select', 'v, c')
-            ->add('from', 'AppBundle:cart_entries v')
-            ->innerJoin('AppBundle:CartItem', 'c')
-            ->where('v.itemId = c.id')
-            ->where('v.cartId = 1')
-            ->getQuery()
-            ->getResult();
-
-echo var_dump($items); */
 
         return $this->render('default/view_cart.html.twig', array(
             'cart_items' => $cart_items ,
         ));
     }
 
+    /**
+     * @Route("/wish_cart_list/{id}")
+     */
+    public function wish_cart_list($id){
+        $em = $this->getDoctrine()->getManager();
+        /** @var cart_entries $cart_items */
+        $cart_items = $this->getDoctrine()
+            ->getRepository('AppBundle:cart_entries')
+            ->findBy(
+                array('cartId'=> $id)
+            );
 
-    public function getCartItems($cart_id) {
-        $qb = $this->entityManager->createQueryBuilder();
-
-        $qb
-            ->select('entry', 'item')
-            ->from('AppBundle\Entity\cart_entries', 'entry')
-            ->leftJoin(
-                'AppBundle\Entity\item',
-                'item',
-                \Doctrine\ORM\Query\Expr\Join::WITH,
-                'entry.item_id = item.id'
-            )
-            ->where('entry = :cart_id')
-            ->setParameter('cart_id', $cart_id);
-
-        $result =  $qb->getQuery()->getResult();
-
-        echo var_dump($result);
-
+        return $this->render('default/view_wish_cart.html.twig', array(
+            'cart_items' => $cart_items ,
+        ));
     }
+
 }
 
 
